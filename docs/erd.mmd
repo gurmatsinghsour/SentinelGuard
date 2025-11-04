@@ -1,0 +1,76 @@
+erDiagram
+    analysts ||--o{ incident_tasks : "assigned_to"
+    analysts ||--o{ compliance_reports : "generated_by"
+    assets ||--o{ security_events : "asset_id"
+    security_events ||--o{ ai_assessments : "event_id"
+    security_events ||--o{ incident_tasks : "event_id"
+    security_events ||--o{ threat_intel_matches : "event_id"
+    security_events ||--o| compliance_reports : "event_id"
+
+    analysts {
+        INTEGER analyst_id PK
+        TEXT full_name
+        TEXT email UNIQUE
+        TEXT role
+        INTEGER on_call
+        string created_at
+    }
+
+    assets {
+        INTEGER asset_id PK
+        TEXT hostname UNIQUE
+        TEXT ip_address UNIQUE
+        TEXT business_owner
+        TEXT criticality
+        DATE last_patch_date
+    }
+
+    security_events {
+        INTEGER event_id PK
+        INTEGER asset_id FK
+        string ingest_time
+        TEXT source
+        TEXT raw_log
+        TEXT status
+    }
+
+    ai_assessments {
+        INTEGER assessment_id PK
+        INTEGER event_id FK
+        TEXT model_version
+        REAL risk_score
+        TEXT severity_label
+        TEXT recommended_action
+        TEXT summary
+        string created_at
+    }
+
+    incident_tasks {
+        INTEGER task_id PK
+        INTEGER event_id FK
+        INTEGER assigned_to FK
+        TEXT task_description
+        TEXT priority
+        DATE due_date
+        TEXT status
+        string created_at
+    }
+
+    threat_intel_matches {
+        INTEGER match_id PK
+        INTEGER event_id FK
+        TEXT indicator_type
+        TEXT indicator_value
+        TEXT threat_actor
+        REAL confidence
+    }
+
+    compliance_reports {
+        INTEGER report_id PK
+        INTEGER event_id FK UNIQUE
+        INTEGER generated_by FK
+        string generated_at
+        TEXT regulation
+        TEXT summary_text
+        TEXT export_path
+    }
